@@ -4,18 +4,18 @@ This solution will be the center of User unification proposal.
 
 ## Decisions and drives:
 
-1 - We are using the pilot
+**1 - We are using the pilot**  
 To allow a fast solution delivery, we can make small adjustments in existing pilot and use it.  
 We just need to make it scallable and orchestrate data storage.  
 We'll achieve it for creating a orchestration layer and router strategy on top of it.
 
-2 - We will have a main database
+**2 - We will have a main database**  
 The main central database will have the authority for users inside the company.
 
-3 - We will store user profiles according local regulations
+**3 - We will store user profiles according local regulations**  
 Although the ID is stored in central database all user details will live in their home country
 
-4 - We will have centralized audit points
+**4 - We will have centralized audit points**  
 All user write operations will trigger event in a corporate bus.
 
 
@@ -59,32 +59,25 @@ This service routes the request to regional services according to user home.
 
 ### Main Service
 
-The main service is the great addition to existent solution.
-
-It works as a facade to avoid client system dealing with specific regions clauses
-
-It receives request from client systems and route to specific local system.
+The main service is the great addition to existent solution.  
+It works as a facade to avoid client system dealing with specific regions clauses.  
+It receives request from client systems and route to specific local system.  
 
 A cache system here helps to alleviate load over regional services without configuring stable data authority.
 
-
 ### Regional Services
 
-This system is the worker that persist user data.
-
-That's where the pilot system cames to play.
-
+This system is the worker that persist user data.  
+That's where the pilot system cames to play.  
 We just make it accept an external user id (the UUID generated in main service) and keep the persistence logic intact.
 
 ### Migration Service
 
-We are considering that a big amount of user data lies in legacy system today.
-
-Any system that needs to query customer information without the UUID call this sanitize service.
-
+We are considering that a big amount of user data lies in legacy system today.  
+Any system that needs to query customer information without the UUID call this sanitize service.  
 The request need to receive sufficient desambiguation information for the service to be able to identify if the user record is already migrated (it exists in main database).  
 
-**If it exists**, returns the UUID and finish it (the caller should call main service next time).  This case needs to be marked as bad request since we will use OK requests as metric for user migration.
+**If it exists**, returns the UUID and finish it (the caller should call main service next time).  This case needs to be marked as bad request since we will use OK requests as metric for user migration.  
 
 **If not exists**, it queries legacy systems for the data, create a UUID for the user and triggers the corresponding regional service to write it.
 
@@ -107,23 +100,18 @@ Security points considered in this solution:
 
 ### Network structure
 
-All Regional services lies in private subnets without other route but the main service.
-
-Main service becomes an audit point for all operations but it can became noisy.
-
+All Regional services lies in private subnets without other route but the main service.  
+Main service becomes an audit point for all operations but it can became noisy.  
 A toggle feature can be useful here (all operations, only write operations, only failed operations, ...)
 
 ### Data Storage
-The data stored in main region will be encrypted at rest for main information.
-
+The data stored in main region will be encrypted at rest for main information.  
 Cache service will have route only for main service.
 
 ### Authentication
 
-Regional Services can work as Federated Entities for a capable service like Cognito, Firebase Authentication
-
+Regional Services can work as Federated Entities for a capable service like Cognito, Firebase Authentication, others.  
 Main Service will be behind a firewall that only accepts requests from whitelisted IPs.
-
 
 ## Challenges
 
