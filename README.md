@@ -6,7 +6,7 @@ It is presented using AWS components, but I tried to keep things as conceptual a
 
 Decisions were taken with available amount of information and can be revisited if needed.
 
-![Solution diagram](./drawings/UUID.png)
+![Solution diagram](./drawings/UUS.png)
 
 
 ## Goals
